@@ -23,12 +23,46 @@
 #include "execution/expressions/abstract_expression.h"
 #include "execution/plans/abstract_plan.h"
 #include "fmt/format.h"
+#include "fmt/ranges.h"
 #include "storage/table/tuple.h"
 
 namespace bustub {
 
 /** WindowFunctionType enumerates all the possible window functions in our system */
 enum class WindowFunctionType { CountStarAggregate, CountAggregate, SumAggregate, MinAggregate, MaxAggregate, Rank };
+}  // namespace bustub
+
+template <>
+struct fmt::formatter<bustub::WindowFunctionType> : formatter<string_view> {
+  template <typename FormatContext>
+  auto format(bustub::WindowFunctionType c, FormatContext &ctx) const {
+    using bustub::WindowFunctionType;
+    string_view name = "unknown";
+    switch (c) {
+      case WindowFunctionType::CountStarAggregate:
+        name = "count_star";
+        break;
+      case WindowFunctionType::CountAggregate:
+        name = "count";
+        break;
+      case WindowFunctionType::SumAggregate:
+        name = "sum";
+        break;
+      case WindowFunctionType::MinAggregate:
+        name = "min";
+        break;
+      case WindowFunctionType::MaxAggregate:
+        name = "max";
+        break;
+      case WindowFunctionType::Rank:
+        name = "rank";
+        break;
+    }
+    return formatter<string_view>::format(name, ctx);
+  }
+};
+
+namespace bustub {
 
 class WindowFunctionPlanNode : public AbstractPlanNode {
  public:
@@ -108,35 +142,5 @@ struct fmt::formatter<bustub::WindowFunctionPlanNode::WindowFunction> : formatte
     return formatter<std::string>::format(fmt::format("{{ function_arg={}, type={}, partition_by={}, order_by={} }}",
                                                       x.function_, x.type_, x.partition_by_, x.order_by_),
                                           ctx);
-  }
-};
-
-template <>
-struct fmt::formatter<bustub::WindowFunctionType> : formatter<std::string> {
-  template <typename FormatContext>
-  auto format(bustub::WindowFunctionType c, FormatContext &ctx) const {
-    using bustub::WindowFunctionType;
-    std::string name = "unknown";
-    switch (c) {
-      case WindowFunctionType::CountStarAggregate:
-        name = "count_star";
-        break;
-      case WindowFunctionType::CountAggregate:
-        name = "count";
-        break;
-      case WindowFunctionType::SumAggregate:
-        name = "sum";
-        break;
-      case WindowFunctionType::MinAggregate:
-        name = "min";
-        break;
-      case WindowFunctionType::MaxAggregate:
-        name = "max";
-        break;
-      case WindowFunctionType::Rank:
-        name = "rank";
-        break;
-    }
-    return formatter<std::string>::format(name, ctx);
   }
 };

@@ -26,7 +26,41 @@ namespace bustub {
 
 /** ComparisonType represents the type of comparison that we want to perform. */
 enum class ComparisonType { Equal, NotEqual, LessThan, LessThanOrEqual, GreaterThan, GreaterThanOrEqual };
+}  // namespace bustub
 
+template <>
+struct fmt::formatter<bustub::ComparisonType> : formatter<string_view> {
+  template <typename FormatContext>
+  auto format(bustub::ComparisonType c, FormatContext &ctx) const {
+    string_view name;
+    switch (c) {
+      case bustub::ComparisonType::Equal:
+        name = "=";
+        break;
+      case bustub::ComparisonType::NotEqual:
+        name = "!=";
+        break;
+      case bustub::ComparisonType::LessThan:
+        name = "<";
+        break;
+      case bustub::ComparisonType::LessThanOrEqual:
+        name = "<=";
+        break;
+      case bustub::ComparisonType::GreaterThan:
+        name = ">";
+        break;
+      case bustub::ComparisonType::GreaterThanOrEqual:
+        name = ">=";
+        break;
+      default:
+        name = "Unknown";
+        break;
+    }
+    return formatter<string_view>::format(name, ctx);
+  }
+};
+
+namespace bustub {
 /**
  * ComparisonExpression represents two expressions being compared.
  */
@@ -80,35 +114,3 @@ class ComparisonExpression : public AbstractExpression {
   }
 };
 }  // namespace bustub
-
-template <>
-struct fmt::formatter<bustub::ComparisonType> : formatter<string_view> {
-  template <typename FormatContext>
-  auto format(bustub::ComparisonType c, FormatContext &ctx) const {
-    string_view name;
-    switch (c) {
-      case bustub::ComparisonType::Equal:
-        name = "=";
-        break;
-      case bustub::ComparisonType::NotEqual:
-        name = "!=";
-        break;
-      case bustub::ComparisonType::LessThan:
-        name = "<";
-        break;
-      case bustub::ComparisonType::LessThanOrEqual:
-        name = "<=";
-        break;
-      case bustub::ComparisonType::GreaterThan:
-        name = ">";
-        break;
-      case bustub::ComparisonType::GreaterThanOrEqual:
-        name = ">=";
-        break;
-      default:
-        name = "Unknown";
-        break;
-    }
-    return formatter<string_view>::format(name, ctx);
-  }
-};

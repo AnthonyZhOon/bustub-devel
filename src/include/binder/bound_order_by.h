@@ -34,6 +34,35 @@ enum class OrderByType : uint8_t {
 };
 
 using OrderBy = std::pair<OrderByType, AbstractExpressionRef>;
+}  // namespace bustub
+
+template <>
+struct fmt::formatter<bustub::OrderByType> : formatter<string_view> {
+  template <typename FormatContext>
+  auto format(bustub::OrderByType c, FormatContext &ctx) const {
+    string_view name;
+    switch (c) {
+      case bustub::OrderByType::INVALID:
+        name = "Invalid";
+        break;
+      case bustub::OrderByType::ASC:
+        name = "Ascending";
+        break;
+      case bustub::OrderByType::DESC:
+        name = "Descending";
+        break;
+      case bustub::OrderByType::DEFAULT:
+        name = "Default";
+        break;
+      default:
+        name = "Unknown";
+        break;
+    }
+    return formatter<string_view>::format(name, ctx);
+  }
+};
+
+namespace bustub {
 
 /**
  * BoundOrderBy is an item in the ORDER BY clause.
@@ -70,31 +99,5 @@ struct fmt::formatter<std::unique_ptr<T>, std::enable_if_t<std::is_base_of<bustu
   template <typename FormatCtx>
   auto format(const std::unique_ptr<bustub::BoundOrderBy> &x, FormatCtx &ctx) const {
     return fmt::formatter<std::string>::format(x->ToString(), ctx);
-  }
-};
-
-template <>
-struct fmt::formatter<bustub::OrderByType> : formatter<string_view> {
-  template <typename FormatContext>
-  auto format(bustub::OrderByType c, FormatContext &ctx) const {
-    string_view name;
-    switch (c) {
-      case bustub::OrderByType::INVALID:
-        name = "Invalid";
-        break;
-      case bustub::OrderByType::ASC:
-        name = "Ascending";
-        break;
-      case bustub::OrderByType::DESC:
-        name = "Descending";
-        break;
-      case bustub::OrderByType::DEFAULT:
-        name = "Default";
-        break;
-      default:
-        name = "Unknown";
-        break;
-    }
-    return formatter<string_view>::format(name, ctx);
   }
 };

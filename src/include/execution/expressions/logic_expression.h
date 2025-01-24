@@ -31,7 +31,29 @@ namespace bustub {
 
 /** ArithmeticType represents the type of logic operation that we want to perform. */
 enum class LogicType { And, Or };
+}  // namespace bustub
 
+template <>
+struct fmt::formatter<bustub::LogicType> : formatter<string_view> {
+  template <typename FormatContext>
+  auto format(bustub::LogicType c, FormatContext &ctx) const {
+    string_view name;
+    switch (c) {
+      case bustub::LogicType::And:
+        name = "and";
+        break;
+      case bustub::LogicType::Or:
+        name = "or";
+        break;
+      default:
+        name = "Unknown";
+        break;
+    }
+    return formatter<string_view>::format(name, ctx);
+  }
+};
+
+namespace bustub {
 /**
  * LogicExpression represents two expressions being computed.
  */
@@ -106,23 +128,3 @@ class LogicExpression : public AbstractExpression {
   }
 };
 }  // namespace bustub
-
-template <>
-struct fmt::formatter<bustub::LogicType> : formatter<string_view> {
-  template <typename FormatContext>
-  auto format(bustub::LogicType c, FormatContext &ctx) const {
-    string_view name;
-    switch (c) {
-      case bustub::LogicType::And:
-        name = "and";
-        break;
-      case bustub::LogicType::Or:
-        name = "or";
-        break;
-      default:
-        name = "Unknown";
-        break;
-    }
-    return formatter<string_view>::format(name, ctx);
-  }
-};

@@ -31,7 +31,29 @@ namespace bustub {
 
 /** ArithmeticType represents the type of computation that we want to perform. */
 enum class ArithmeticType { Plus, Minus };
+}  // namespace bustub
 
+template <>
+struct fmt::formatter<bustub::ArithmeticType> : formatter<string_view> {
+  template <typename FormatContext>
+  auto format(bustub::ArithmeticType c, FormatContext &ctx) const {
+    string_view name;
+    switch (c) {
+      case bustub::ArithmeticType::Plus:
+        name = "+";
+        break;
+      case bustub::ArithmeticType::Minus:
+        name = "-";
+        break;
+      default:
+        name = "Unknown";
+        break;
+    }
+    return formatter<string_view>::format(name, ctx);
+  }
+};
+
+namespace bustub {
 /**
  * ArithmeticExpression represents two expressions being computed, ONLY SUPPORT INTEGER FOR NOW.
  */
@@ -93,23 +115,3 @@ class ArithmeticExpression : public AbstractExpression {
   }
 };
 }  // namespace bustub
-
-template <>
-struct fmt::formatter<bustub::ArithmeticType> : formatter<string_view> {
-  template <typename FormatContext>
-  auto format(bustub::ArithmeticType c, FormatContext &ctx) const {
-    string_view name;
-    switch (c) {
-      case bustub::ArithmeticType::Plus:
-        name = "+";
-        break;
-      case bustub::ArithmeticType::Minus:
-        name = "-";
-        break;
-      default:
-        name = "Unknown";
-        break;
-    }
-    return formatter<string_view>::format(name, ctx);
-  }
-};

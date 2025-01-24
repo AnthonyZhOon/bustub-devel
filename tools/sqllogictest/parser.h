@@ -31,6 +31,7 @@
 
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 #include <vector>
 #include "fmt/format.h"
@@ -58,6 +59,51 @@ enum class SortMode : uint8_t {
   NOSORT = 1,  /**< Don't sort before comparison. */
   ROWSORT = 2, /**< Sort by string before comparison */
 };
+}  // namespace bustub
+
+template <>
+struct fmt::formatter<bustub::Location> : formatter<std::string> {
+  template <typename FormatContext>
+  auto format(const bustub::Location &c, FormatContext &ctx) const {
+    if (c.parent_ != nullptr) {
+      return formatter<std::string>::format(fmt::format("{}:{} in {}", c.file_, c.line_, *c.parent_), ctx);
+    }
+    return formatter<std::string>::format(fmt::format("{}:{}", c.file_, c.line_), ctx);
+  }
+};
+
+template <>
+struct fmt::formatter<std::shared_ptr<bustub::Location>> : formatter<std::string> {
+  template <typename FormatContext>
+  auto format(const std::shared_ptr<bustub::Location> &c, FormatContext &ctx) const {
+    return formatter<std::string>::format(fmt::format("{}", c), ctx);
+  }
+};
+
+template <>
+struct fmt::formatter<bustub::SortMode> : formatter<string_view> {
+  template <typename FormatContext>
+  auto format(bustub::SortMode c, FormatContext &ctx) const {
+    string_view name;
+    switch (c) {
+      case bustub::SortMode::INVALID:
+        name = "Invalid";
+        break;
+      case bustub::SortMode::NOSORT:
+        name = "NoSort";
+        break;
+      case bustub::SortMode::ROWSORT:
+        name = "RowSort";
+        break;
+      default:
+        name = "Unknown";
+        break;
+    }
+    return formatter<string_view>::format(name, ctx);
+  }
+};
+
+namespace bustub {
 
 class Record {
  public:
@@ -72,7 +118,7 @@ class Record {
 class IncludeRecord : public Record {
  public:
   explicit IncludeRecord(Location loc, std::string filename)
-      : Record{RecordType::INCLUDE, std::move(loc)}, filename_(std::move(filename)){};
+      : Record{RecordType::INCLUDE, std::move(loc)}, filename_(std::move(filename)) {};
 
   auto ToString() const -> std::string override { return fmt::format("Include {{ filename={} }}", filename_); }
 
@@ -85,7 +131,7 @@ class StatementRecord : public Record {
       : Record{RecordType::STATEMENT, std::move(loc)},
         is_error_(is_error),
         sql_(std::move(sql)),
-        extra_options_(std::move(extra_options)){};
+        extra_options_(std::move(extra_options)) {};
 
   auto ToString() const -> std::string override {
     return fmt::format("Statement {{\nis_error={},\nsql={}\n}}", is_error_, sql_);
@@ -119,7 +165,7 @@ class QueryRecord : public Record {
 
 class SleepRecord : public Record {
  public:
-  explicit SleepRecord(Location loc, size_t seconds) : Record{RecordType::SLEEP, std::move(loc)}, seconds_(seconds){};
+  explicit SleepRecord(Location loc, size_t seconds) : Record{RecordType::SLEEP, std::move(loc)}, seconds_(seconds) {};
 
   auto ToString() const -> std::string override { return fmt::format("Sleep {{ seconds={} }}", seconds_); }
 
@@ -140,25 +186,6 @@ class SQLLogicTestParser {
 
 }  // namespace bustub
 
-template <>
-struct fmt::formatter<bustub::Location> : formatter<string_view> {
-  template <typename FormatContext>
-  auto format(const bustub::Location &c, FormatContext &ctx) const {
-    if (c.parent_ != nullptr) {
-      return formatter<string_view>::format(fmt::format("{}:{} in {}", c.file_, c.line_, c.parent_), ctx);
-    }
-    return formatter<string_view>::format(fmt::format("{}:{}", c.file_, c.line_), ctx);
-  }
-};
-
-template <>
-struct fmt::formatter<std::shared_ptr<bustub::Location>> : formatter<string_view> {
-  template <typename FormatContext>
-  auto format(const std::shared_ptr<bustub::Location> &c, FormatContext &ctx) const {
-    return formatter<string_view>::format(fmt::format("{}", *c), ctx);
-  }
-};
-
 template <typename T>
 struct fmt::formatter<T, std::enable_if_t<std::is_base_of<bustub::Record, T>::value, char>>
     : fmt::formatter<std::string> {
@@ -174,28 +201,5 @@ struct fmt::formatter<std::unique_ptr<T>, std::enable_if_t<std::is_base_of<bustu
   template <typename FormatCtx>
   auto format(const std::unique_ptr<bustub::Record> &x, FormatCtx &ctx) const {
     return fmt::formatter<std::string>::format(x->ToString(), ctx);
-  }
-};
-
-template <>
-struct fmt::formatter<bustub::SortMode> : formatter<string_view> {
-  template <typename FormatContext>
-  auto format(bustub::SortMode c, FormatContext &ctx) const {
-    string_view name;
-    switch (c) {
-      case bustub::SortMode::INVALID:
-        name = "Invalid";
-        break;
-      case bustub::SortMode::NOSORT:
-        name = "NoSort";
-        break;
-      case bustub::SortMode::ROWSORT:
-        name = "RowSort";
-        break;
-      default:
-        name = "Unknown";
-        break;
-    }
-    return formatter<string_view>::format(name, ctx);
   }
 };

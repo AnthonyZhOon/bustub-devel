@@ -32,6 +32,38 @@ enum class JoinType : uint8_t {
   INNER = 4,   /**< Inner join. */
   OUTER = 5    /**< Outer join. */
 };
+}  // namespace bustub
+
+template <>
+struct fmt::formatter<bustub::JoinType> : formatter<string_view> {
+  template <typename FormatContext>
+  auto format(bustub::JoinType c, FormatContext &ctx) const {
+    string_view name;
+    switch (c) {
+      case bustub::JoinType::INVALID:
+        name = "Invalid";
+        break;
+      case bustub::JoinType::LEFT:
+        name = "Left";
+        break;
+      case bustub::JoinType::RIGHT:
+        name = "Right";
+        break;
+      case bustub::JoinType::INNER:
+        name = "Inner";
+        break;
+      case bustub::JoinType::OUTER:
+        name = "Outer";
+        break;
+      default:
+        name = "Unknown";
+        break;
+    }
+    return formatter<string_view>::format(name, ctx);
+  }
+};
+
+namespace bustub {
 
 /**
  * A join. e.g., `SELECT * FROM x INNER JOIN y ON ...`, where `x INNER JOIN y ON ...` is `BoundJoinRef`.
@@ -64,32 +96,3 @@ class BoundJoinRef : public BoundTableRef {
   std::unique_ptr<BoundExpression> condition_;
 };
 }  // namespace bustub
-
-template <>
-struct fmt::formatter<bustub::JoinType> : formatter<string_view> {
-  template <typename FormatContext>
-  auto format(bustub::JoinType c, FormatContext &ctx) const {
-    string_view name;
-    switch (c) {
-      case bustub::JoinType::INVALID:
-        name = "Invalid";
-        break;
-      case bustub::JoinType::LEFT:
-        name = "Left";
-        break;
-      case bustub::JoinType::RIGHT:
-        name = "Right";
-        break;
-      case bustub::JoinType::INNER:
-        name = "Inner";
-        break;
-      case bustub::JoinType::OUTER:
-        name = "Outer";
-        break;
-      default:
-        name = "Unknown";
-        break;
-    }
-    return formatter<string_view>::format(name, ctx);
-  }
-};

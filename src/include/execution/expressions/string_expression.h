@@ -31,7 +31,29 @@
 namespace bustub {
 
 enum class StringExpressionType { Lower, Upper };
+}  // namespace bustub
 
+template <>
+struct fmt::formatter<bustub::StringExpressionType> : formatter<string_view> {
+  template <typename FormatContext>
+  auto format(bustub::StringExpressionType c, FormatContext &ctx) const {
+    string_view name;
+    switch (c) {
+      case bustub::StringExpressionType::Upper:
+        name = "upper";
+        break;
+      case bustub::StringExpressionType::Lower:
+        name = "lower";
+        break;
+      default:
+        name = "Unknown";
+        break;
+    }
+    return formatter<string_view>::format(name, ctx);
+  }
+};
+
+namespace bustub {
 /**
  * StringExpression represents two expressions being computed.
  */
@@ -73,23 +95,3 @@ class StringExpression : public AbstractExpression {
  private:
 };
 }  // namespace bustub
-
-template <>
-struct fmt::formatter<bustub::StringExpressionType> : formatter<string_view> {
-  template <typename FormatContext>
-  auto format(bustub::StringExpressionType c, FormatContext &ctx) const {
-    string_view name;
-    switch (c) {
-      case bustub::StringExpressionType::Upper:
-        name = "upper";
-        break;
-      case bustub::StringExpressionType::Lower:
-        name = "lower";
-        break;
-      default:
-        name = "Unknown";
-        break;
-    }
-    return formatter<string_view>::format(name, ctx);
-  }
-};
